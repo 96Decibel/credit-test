@@ -19,7 +19,8 @@ client.on('message',async message => {
   const author = message.author.id;
   const balance = args[2];
   const daily = Math.floor(Math.random() * 350) + 10;
- 
+  const coolDown = new Set();
+
   if(!credits[author]) credits[author] = {credits: 50};
   if(!credits[mention.id]) credits[mention.id] = {credits: 50};
   fs.writeFile(path, JSON.stringify(credits, null, 5), function(err) {if(err) console.log(err)});
