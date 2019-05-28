@@ -26,7 +26,7 @@ client.on('ready', function(){
 
 
 
-const credits = JSON.parse(fs.readFileSync("./creditsCode.json", "utf8"));
+const credits = JSON.parse(fs.readFileSync("./credits.json", "utf8"));
 const coolDown = new Set();
 
 client.on('message',async message => {
@@ -119,7 +119,7 @@ client.on('message', async message => {
     credits: m
     };
 
-    fs.writeFile("./creditsCode.json", JSON.stringify(userData.credits + amount), (err) => {
+    fs.writeFile("./credits.json", JSON.stringify(userData.credits + amount), (err) => {
     if (err) console.error(err);
     });
     
