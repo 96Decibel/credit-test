@@ -26,8 +26,7 @@ client.on('ready', function(){
 
 
 
-let credits = JSON.parse(fs.readFileSync('./credits.json', 'utf8')); // يقوم بقراءه ملف النقاط , والمسار حق النقاطس العام لجميع الأوامر
- 
+let credits = JSON.parse(fs.readFileSync('./credits.json', 'utf8')); 
 const cool = [];
 client.on('message',async message => {
   if(message.author.bot) return;
@@ -41,7 +40,6 @@ client.on('message',async message => {
   const author = message.author.id;
   const balance = args[2];
   const daily = Math.floor(Math.random() * 350) + 10;
-  const coolDown = new Set(1);
 
   if(!credits[author]) credits[author] = {credits: 50};
   if(!credits[mention.id]) credits[mention.id] = {credits: 50};
@@ -82,31 +80,31 @@ client.on('message',async message => {
     if(mention.bot) return message.channel.send(`:interrobang:**| ${message.author.username}, I cant find** ${message.content.split(' ')[1]}**!**`);
    message.channel.send(`**${mention.username}, your :credit_card: balance is** \`$${credits[mention.id].credits}\`**.** `);
  }
- 
-}
-       if(args[0].toLowerCase() === `${prefix}daily`) {  
-     
-if(credits[message.author.id].daily != moment().format('L')) {
- 
-      credits[message.author.id].daily = moment().format('L');
-         
- 
-         let ammount = (300, 500, 100, 200, 120, 150, 350, 320,220,250);
-         credits[author].credits += ammount;
-     
-       
-         message.channel.send(`**:atm: | ${message.author.username}, you received your :yen: ${ammount} daily credits!**`);
-       fs.writeFile("./credits.json", JSON.stringify(credits), function(e) {
-           if (e) throw e;
-       })
- 
-     }else{
-     message.channel.send(`:stopwatch: : **Please cool down  ${moment().endOf('day').fromNow()}**`);
- 
-     }
- 
-       }
+ let amount = 250;
+    if(message.content.startsWith(prefix + "daily")) {
+    if(message.author.bot) return;
+    if(coolDown.has(message.author.id)) return message.channel.send(`**:stopwatch: | ${message.author.username}, your daily :yen: credits refreshes in \`\`1 Day\`\`.**`);
+    
+    let userData = credits[message.author.id];
+    let m = userData.credits + amount;
+    credits[message.author.id] = {
+    credits: m
+    };
+
+    fs.writeFile("./credits.json", JSON.stringify(userData.credits + amount), (err) => {
+    if (err) console.error(err);
+    });
+    
+    message.channel.send(`**:atm: | ${message.author.username}, you received your :yen: ${amount} credits!**`).then(() => {
+        coolDown.add(message.author.id);
+    });
+    
+    setTimeout(() => {
+       coolDown.remove(message.author.id);
+    },86400000);
+    }
 });
+
 
 client.on('message', async message => {
     let amount = 250;
